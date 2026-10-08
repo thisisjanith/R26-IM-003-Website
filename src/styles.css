@@ -103,6 +103,11 @@
   --glass-bg: oklch(1 0 0 / 0.6);
   --glass-bg-dark: oklch(0.18 0.04 265 / 0.5);
   --glass-border: oklch(1 0 0 / 0.25);
+
+  /* Charts: emphasis mark + recessive comparison mark (validated vs card surface) */
+  --chart-emph: var(--primary);
+  --chart-muted: oklch(0.66 0.025 260);
+  --chart-grid: oklch(0.92 0.01 255);
 }
 
 .dark {
@@ -145,6 +150,9 @@
 
   --glass-bg: oklch(0.21 0.045 265 / 0.65);
   --glass-border: oklch(1 0 0 / 0.12);
+
+  --chart-muted: oklch(0.55 0.03 260);
+  --chart-grid: oklch(1 0 0 / 0.08);
 }
 
 @layer base {
