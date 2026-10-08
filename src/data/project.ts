@@ -5,6 +5,12 @@ export type Tone = "primary" | "warm" | "cool" | "fresh";
 
 export type ComponentSlug = "measurement" | "life-science" | "physical-science" | "number-concepts";
 
+// Tailwind Safelist for dynamic slug-based colors
+// text-comp-measurement text-comp-life-science text-comp-physical-science text-comp-number-concepts
+// bg-comp-measurement bg-comp-life-science bg-comp-physical-science bg-comp-number-concepts
+// bg-comp-measurement-bg bg-comp-life-science-bg bg-comp-physical-science-bg bg-comp-number-concepts-bg
+// ring-comp-measurement ring-comp-life-science ring-comp-physical-science ring-comp-number-concepts
+
 export type SessionMetrics = {
   n: number;
   arTime: [number, number]; // mean, SD (seconds)

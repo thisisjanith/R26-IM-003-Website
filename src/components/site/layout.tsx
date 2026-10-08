@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  Sparkles,
   Menu,
   X,
   ArrowRight,
@@ -14,13 +13,6 @@ import {
 } from "lucide-react";
 
 import { COMPONENTS, GROUP, type ComponentSlug, type Tone } from "@/data/project";
-
-export const GRADIENT: Record<Tone, string> = {
-  primary: "bg-gradient-primary",
-  warm: "bg-gradient-warm",
-  cool: "bg-gradient-cool",
-  fresh: "bg-gradient-fresh",
-};
 
 export function ComponentIcon({
   slug,
@@ -62,7 +54,7 @@ function useTheme() {
     try {
       localStorage.setItem("theme", next);
     } catch {
-      // storage unavailable (private mode); theme still applies for this visit
+      // storage unavailable
     }
   };
 
@@ -83,29 +75,10 @@ export function SiteShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      <Background />
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-200">
       <SiteHeader nav={nav} home={home} />
       {children}
       <SiteFooter />
-    </div>
-  );
-}
-
-function Background() {
-  return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      <div
-        className="absolute inset-0 opacity-[0.08] dark:opacity-[0.15]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1.5px 1.5px, currentColor 1.5px, transparent 0)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-      <div className="absolute -top-32 -left-32 h-[800px] w-[800px] animate-pulse-glow rounded-full bg-gradient-cool opacity-30 blur-[150px]" />
-      <div className="absolute top-1/4 -right-40 h-[900px] w-[900px] animate-float-slow rounded-full bg-gradient-warm opacity-20 blur-[150px]" />
-      <div className="absolute bottom-10 left-1/4 h-[700px] w-[700px] animate-float-medium rounded-full bg-gradient-fresh opacity-20 blur-[150px]" />
     </div>
   );
 }
@@ -117,7 +90,7 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -130,7 +103,7 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
           if (e.isIntersecting) setActive(e.target.id);
         });
       },
-      { rootMargin: "-40% 0px -55% 0px", threshold: 0 },
+      { rootMargin: "-30% 0px -70% 0px", threshold: 0 }
     );
     nav.forEach((n) => {
       const el = document.getElementById(n.id);
@@ -141,37 +114,27 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-4"}`}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled ? "bg-background/80 backdrop-blur-md border-b shadow-sm" : "bg-transparent border-b border-transparent"
+      }`}
     >
-      <div className="mx-auto max-w-7xl px-4">
-        <nav
-          className={`flex items-center justify-between rounded-2xl px-4 py-3 transition-all duration-300 ${scrolled ? "glass shadow-soft" : "bg-transparent"}`}
-        >
-          <Link
-            to="/"
-            className={`flex items-center gap-2 ${scrolled ? "text-foreground" : "text-white"}`}
-          >
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-primary shadow-glow">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </span>
-            <span className="font-display text-sm font-bold tracking-tight sm:text-base">
+      <div className="mx-auto max-w-7xl px-4 lg:px-8">
+        <nav className="flex items-center justify-between py-4">
+          <Link to="/" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+            <span className="font-display text-lg font-bold tracking-tight">
               AR<span className="text-gradient">STEAM</span>.lk
             </span>
           </Link>
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-1 xl:gap-2 xl:flex">
             {nav.map((n) => (
               <li key={n.id}>
                 <a
                   href={`#${n.id}`}
-                  className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                  className={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
                     active === n.id
-                      ? scrolled
-                        ? "bg-foreground/10 text-foreground font-semibold"
-                        : "bg-white/15 text-white font-semibold"
-                      : scrolled
-                        ? "text-foreground/80 hover:bg-foreground/10 hover:text-foreground"
-                        : "text-white/80 hover:bg-white/10 hover:text-white"
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-muted-foreground hover:bg-surface hover:text-foreground"
                   }`}
                 >
                   {n.label}
@@ -180,41 +143,37 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
             ))}
           </ul>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={toggle}
               aria-label="Toggle theme"
-              className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card/60 text-foreground shadow-soft backdrop-blur transition-all hover:scale-105 hover:text-primary"
+              className="relative grid h-9 w-9 place-items-center rounded-full bg-surface border border-border text-foreground transition-all hover:bg-border focus:ring-2 focus:ring-primary focus:outline-none"
             >
-              <Sun
-                className={`h-4 w-4 transition-all ${theme === "dark" ? "scale-0 -rotate-90 opacity-0" : "scale-100 rotate-0 opacity-100"}`}
-              />
-              <Moon
-                className={`absolute h-4 w-4 transition-all ${theme === "dark" ? "scale-100 rotate-0 opacity-100" : "scale-0 rotate-90 opacity-0"}`}
-              />
+              <Sun className={`h-4 w-4 transition-all ${theme === "dark" ? "scale-0 -rotate-90 opacity-0" : "scale-100 rotate-0 opacity-100"}`} />
+              <Moon className={`absolute h-4 w-4 transition-all ${theme === "dark" ? "scale-100 rotate-0 opacity-100" : "scale-0 rotate-90 opacity-0"}`} />
             </button>
 
             {home ? (
               <a
                 href="#components"
-                className="group hidden items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.03] lg:inline-flex"
+                className="hidden items-center gap-2 rounded-full bg-gradient-primary px-5 py-2 text-sm font-semibold text-primary-foreground whitespace-nowrap transition-transform hover:-translate-y-0.5 hover:shadow-soft focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none md:flex"
               >
-                Explore Components
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                View Components
+                <ArrowRight className="h-4 w-4" />
               </a>
             ) : (
               <Link
                 to="/"
                 hash="components"
-                className="group hidden items-center gap-2 rounded-full bg-gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.03] lg:inline-flex"
+                className="hidden items-center gap-2 rounded-full bg-gradient-primary px-5 py-2 text-sm font-semibold text-primary-foreground whitespace-nowrap transition-transform hover:-translate-y-0.5 hover:shadow-soft focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none md:flex"
               >
                 All Components
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-4 w-4" />
               </Link>
             )}
 
             <button
-              className={`rounded-full p-2 lg:hidden ${scrolled ? "text-foreground" : "text-white"}`}
+              className="rounded-full p-2 text-foreground xl:hidden hover:bg-surface focus:ring-2 focus:ring-primary focus:outline-none"
               onClick={() => setOpen((s) => !s)}
               aria-label="Menu"
             >
@@ -224,32 +183,34 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
         </nav>
 
         {open && (
-          <div className="mt-2 rounded-2xl glass p-3 shadow-soft lg:hidden">
+          <div className="border-t bg-background px-2 pb-4 pt-2 shadow-sm xl:hidden animate-fade-up">
             <div className="grid grid-cols-2 gap-2">
               {nav.map((n) => (
                 <a
                   key={n.id}
                   href={`#${n.id}`}
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-surface"
                 >
                   {n.label}
                 </a>
               ))}
             </div>
-            <p className="mt-3 border-t border-border px-3 pt-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="mt-4 border-t px-3 pt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Components
             </p>
-            <div className="mt-1 grid grid-cols-2 gap-2">
+            <div className="mt-2 grid grid-cols-1 gap-2">
               {COMPONENTS.map((c) => (
                 <Link
                   key={c.slug}
                   to="/components/$slug"
                   params={{ slug: c.slug }}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-surface"
                 >
-                  <ComponentIcon slug={c.slug} className="h-4 w-4 text-primary" />
+                  <span className={`flex h-6 w-6 items-center justify-center rounded-md bg-comp-${c.slug} text-white`}>
+                    <ComponentIcon slug={c.slug} className="h-4 w-4" />
+                  </span>
                   {c.short}
                 </Link>
               ))}
@@ -263,33 +224,31 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
 
 function SiteFooter() {
   return (
-    <footer className="relative mt-12 overflow-hidden bg-[oklch(0.15_0.04_265)] py-12 text-white/80">
-      <div className="absolute inset-0 bg-hero opacity-40" />
-      <div className="relative mx-auto max-w-7xl px-4">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr_1fr]">
-          <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl bg-gradient-primary shadow-glow">
-              <Sparkles className="h-5 w-5" />
-            </span>
+    <footer className="border-t bg-surface py-12 text-foreground transition-colors duration-200 mt-20">
+      <div className="mx-auto max-w-7xl px-4 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
+          <div className="flex flex-col gap-4">
             <div>
-              <p className="font-display font-bold text-white">AR STEAM.lk</p>
-              <p className="text-xs text-white/60">
-                {GROUP.id} · {GROUP.institute} {GROUP.year}
+              <p className="font-display text-lg font-bold">AR STEAM.lk</p>
+              <p className="text-sm font-medium text-primary mt-1">
+                {GROUP.id}
               </p>
-              <p className="mt-3 max-w-sm text-sm text-white/60">{GROUP.title}</p>
             </div>
+            <p className="max-w-md text-sm text-muted-foreground">
+              {GROUP.title}
+            </p>
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/50">
+            <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Components
             </p>
-            <ul className="mt-3 space-y-2 text-sm">
+            <ul className="mt-4 space-y-3 text-sm">
               {COMPONENTS.map((c) => (
                 <li key={c.slug}>
                   <Link
                     to="/components/$slug"
                     params={{ slug: c.slug }}
-                    className="hover:text-white"
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {c.name}
                   </Link>
@@ -298,19 +257,20 @@ function SiteFooter() {
             </ul>
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/50">
+            <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Supervised by
             </p>
-            <ul className="mt-3 space-y-2 text-sm">
+            <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li>Mr. Ishara Gamage</li>
               <li>Mr. Nushkan Nismi</li>
             </ul>
           </div>
         </div>
-        <p className="mt-10 border-t border-white/10 pt-6 text-xs text-white/50">
-          © {GROUP.year} Mendis B.M.U.I, Bandara M.R.J.K, Jayasundara R.K.M.J.Y, Ilayperuma M.I ·{" "}
-          {GROUP.institute}
-        </p>
+        <div className="mt-12 flex flex-col items-center justify-between border-t pt-8 sm:flex-row gap-4">
+          <p className="text-sm text-muted-foreground">
+            © {GROUP.year} {GROUP.institute} · Mendis, Bandara, Jayasundara, Ilayperuma
+          </p>
+        </div>
       </div>
     </footer>
   );
@@ -332,21 +292,16 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="relative overflow-hidden scroll-mt-24 py-20 lg:py-28">
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-30 mix-blend-multiply dark:mix-blend-screen dark:opacity-20">
-        <div className="absolute left-0 top-1/4 h-[500px] w-[500px] -translate-x-1/2 animate-float-slow rounded-full bg-gradient-cool opacity-10 blur-[100px]" />
-        <div className="absolute right-0 top-3/4 h-[400px] w-[400px] translate-x-1/3 animate-float-medium rounded-full bg-gradient-warm opacity-10 blur-[100px]" />
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="mx-auto mb-12 max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary shadow-soft">
+    <section id={id} className="relative scroll-mt-24 py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-4 lg:px-8">
+        <div className="mx-auto mb-16 max-w-3xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">
             {eyebrow}
           </span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="mt-6 font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-foreground">
             {title}
           </h2>
-          {intro && <p className="mt-4 text-lg text-muted-foreground">{intro}</p>}
+          {intro && <p className="mt-6 text-lg text-muted-foreground leading-relaxed">{intro}</p>}
         </div>
         {children}
       </div>
@@ -357,28 +312,49 @@ export function Section({
 export function Card({
   icon,
   label,
+  slug,
   accent,
+  className = "",
   children,
 }: {
   icon: React.ReactNode;
   label: string;
-  accent: Tone;
+  slug?: ComponentSlug;
+  accent?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
-  const grad = GRADIENT[accent];
-  const shadow = accent === "warm" ? "shadow-warm" : "shadow-soft";
+  const isColored = className?.includes('text-white') || className?.includes('bg-comp-');
+
   return (
-    <div className="group relative overflow-hidden rounded-3xl border bg-card p-7 shadow-soft transition-all hover:-translate-y-1 hover:shadow-card">
-      <div className={`absolute inset-x-0 top-0 h-1 ${grad}`} />
-      <div className="flex items-center gap-3">
-        <span
-          className={`grid h-11 w-11 place-items-center rounded-xl text-white ${grad} ${shadow}`}
-        >
-          {icon}
-        </span>
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+    <div className={`group relative flex flex-col overflow-hidden rounded-2xl border ${className.includes('bg-') ? '' : 'bg-card'} p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-soft ${className} ${isColored ? 'shadow-lg ring-1 ring-inset ring-white/10' : ''}`}>
+      {slug && <div className={`absolute inset-x-0 top-0 h-1 bg-comp-${slug}`} />}
+      
+      {/* Premium effects for colored cards */}
+      {isColored && (
+        <>
+          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl transition-transform duration-700 group-hover:scale-150 group-hover:bg-white/15" />
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/20 pointer-events-none" />
+        </>
+      )}
+
+      <div className="relative z-10 flex items-center gap-4">
+        {slug ? (
+          <span className={`flex h-12 w-12 items-center justify-center rounded-xl bg-comp-${slug}-bg text-white`}>
+            {icon}
+          </span>
+        ) : isColored ? (
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md shadow-inner border border-white/20">
+            {icon}
+          </span>
+        ) : (
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-foreground">
+            {icon}
+          </span>
+        )}
+        <p className={`text-sm font-bold uppercase tracking-wider ${isColored ? 'text-white' : 'text-foreground'}`}>{label}</p>
       </div>
-      <div className="mt-5 text-base leading-relaxed">{children}</div>
+      <div className={`relative z-10 mt-6 text-base leading-relaxed flex-1 ${isColored ? 'text-white/90' : 'text-muted-foreground'}`}>{children}</div>
     </div>
   );
 }
@@ -386,12 +362,12 @@ export function Card({
 export function MediaTile({
   src,
   label,
-  tone,
+  slug,
   className = "",
 }: {
   src: string;
   label: string;
-  tone: Tone;
+  slug: ComponentSlug;
   className?: string;
 }) {
   return (
@@ -399,7 +375,7 @@ export function MediaTile({
       href={src}
       target="_blank"
       rel="noopener noreferrer"
-      className={`group block relative overflow-hidden rounded-3xl shadow-card ring-1 ring-border cursor-zoom-in ${className}`}
+      className={`group block relative overflow-hidden rounded-2xl border shadow-sm cursor-zoom-in ${className}`}
     >
       <img
         src={src}
@@ -407,12 +383,12 @@ export function MediaTile({
         loading="lazy"
         width={1024}
         height={1024}
-        className="h-full min-h-[260px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        className="h-full min-h-[260px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.15_0.04_265/0.85)] via-transparent to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-5 text-white">
-        <span className={`h-8 w-1.5 rounded-full ${GRADIENT[tone]}`} />
-        <span className="font-display font-semibold drop-shadow">{label}</span>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+      <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-5">
+        <span className={`h-8 w-1.5 rounded-full bg-comp-${slug}`} />
+        <span className="font-display font-semibold text-white drop-shadow-sm">{label}</span>
       </div>
     </a>
   );
@@ -423,23 +399,19 @@ export function InteractionCard({
   icon,
   title,
   body,
-  tone,
+  slug,
 }: {
   n: string;
   icon: React.ReactNode;
   title: string;
   body: string;
-  tone: Tone;
+  slug: ComponentSlug;
 }) {
-  const grad = GRADIENT[tone];
   return (
-    <div className="group relative overflow-hidden rounded-3xl border bg-card p-7 shadow-soft transition-all hover:-translate-y-1 hover:shadow-card">
-      <div
-        className={`absolute -right-10 -top-10 h-40 w-40 rounded-full ${grad} opacity-20 blur-2xl transition-opacity group-hover:opacity-40`}
-      />
-      <div className="relative flex items-start gap-4">
+    <div className="group relative overflow-hidden rounded-2xl border bg-card p-8 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-soft">
+      <div className="relative flex items-start gap-5">
         <span
-          className={`grid h-14 w-14 flex-shrink-0 place-items-center rounded-2xl text-white shadow-soft ${grad}`}
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-comp-${slug} text-white`}
         >
           {icon}
         </span>
@@ -447,8 +419,8 @@ export function InteractionCard({
           <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Interaction {n}
           </span>
-          <h3 className="mt-1 font-display text-xl font-bold text-foreground">{title}</h3>
-          <p className="mt-2 text-muted-foreground">{body}</p>
+          <h3 className="mt-2 font-display text-xl font-bold text-foreground">{title}</h3>
+          <p className="mt-3 text-muted-foreground leading-relaxed">{body}</p>
         </div>
       </div>
     </div>
@@ -459,29 +431,29 @@ export function ResourceCard({
   title,
   description,
   icon,
-  color,
+  slug,
   links,
 }: {
   title: string;
   description: string;
   icon: React.ReactNode;
-  color: string;
+  slug: ComponentSlug;
   links: { label: string; href: string; type: string; download?: string }[];
 }) {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card p-6 shadow-soft transition-all hover:shadow-card">
-      <div className="mb-5 flex items-start gap-4">
+    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card p-8 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-soft">
+      <div className="mb-6 flex items-start gap-5">
         <span
-          className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-white shadow-soft ${color}`}
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-comp-${slug} text-white shadow-sm`}
         >
           {icon}
         </span>
         <div className="flex-1">
-          <p className="font-display text-base font-bold text-foreground">{title}</p>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="font-display text-lg font-bold text-foreground">{title}</p>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{description}</p>
         </div>
       </div>
-      <div className="mt-auto space-y-2">
+      <div className="mt-auto space-y-3">
         {links.map((l) => (
           <a
             key={l.label}
@@ -490,10 +462,16 @@ export function ResourceCard({
             target="_blank"
             rel="noopener noreferrer"
             aria-disabled={l.type === "pending"}
-            className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors ${l.type === "pending" ? "pointer-events-none bg-secondary/50 text-muted-foreground" : "bg-secondary hover:bg-primary/10 hover:text-primary"}`}
+            className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+              l.type === "pending"
+                ? "pointer-events-none bg-surface text-muted-foreground"
+                : `bg-comp-${slug} text-white hover:opacity-90`
+            }`}
           >
-            <span className="font-semibold">{l.label}</span>
-            <span className="rounded-full bg-background px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+            <span>{l.label}</span>
+            <span className={`rounded-full px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold ${
+               l.type === "pending" ? "bg-border text-muted-foreground" : "bg-white/20"
+            }`}>
               {l.type === "link" ? "G-Slides" : l.type}
             </span>
           </a>
@@ -505,62 +483,12 @@ export function ResourceCard({
 
 export function HeroBackdrop() {
   return (
-    <>
-      <div className="absolute inset-0 -z-10 bg-hero" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-background" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-5 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="animate-orbit h-[600px] w-[600px] rounded-full border border-white/[0.06]" />
-        </div>
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="animate-orbit-reverse h-[900px] w-[900px] rounded-full border border-white/[0.04]" />
-        </div>
-        <div
-          className="animate-particle absolute left-[10%] top-[20%] h-2.5 w-2.5 rounded-full bg-steam-orange/60 shadow-[0_0_12px_oklch(0.75_0.17_55/0.8)]"
-          style={{ animationDelay: "0s" }}
-        />
-        <div
-          className="animate-particle absolute left-[65%] top-[70%] h-3 w-3 rounded-full bg-steam-green/60 shadow-[0_0_14px_oklch(0.74_0.16_155/0.8)]"
-          style={{ animationDelay: "3s" }}
-        />
-        <div
-          className="animate-particle absolute left-[90%] top-[50%] h-2.5 w-2.5 rounded-full bg-steam-yellow/60 shadow-[0_0_15px_oklch(0.86_0.16_90/0.8)]"
-          style={{ animationDelay: "2s" }}
-        />
-        <div
-          className="animate-particle absolute left-[80%] top-[15%] h-3.5 w-3.5 rounded-full border border-steam-purple/60 shadow-[0_0_10px_oklch(0.65_0.2_300/0.7)]"
-          style={{ animationDelay: "1.5s", animationDuration: "12s" }}
-        />
-        <div
-          className="animate-particle absolute left-[45%] top-[10%] h-4 w-4 rounded-full border border-steam-orange/50 shadow-[0_0_10px_oklch(0.75_0.17_55/0.6)]"
-          style={{ animationDelay: "6s" }}
-        />
-        <div
-          className="animate-particle absolute left-[25%] top-[75%] flex h-4 w-4 items-center justify-center text-sm font-light text-steam-pink/80"
-          style={{ animationDelay: "4.5s", animationDuration: "10s" }}
-        >
-          +
-        </div>
-        <div
-          className="animate-particle absolute left-[72%] top-[85%] flex h-4 w-4 items-center justify-center text-sm font-light text-steam-purple/70"
-          style={{ animationDelay: "7s", animationDuration: "11s" }}
-        >
-          +
-        </div>
-        <div
-          className="animate-particle absolute left-[5%] top-[55%] h-1.5 w-1.5 rotate-45 rounded-[1px] bg-white/60"
-          style={{ animationDelay: "5s", animationDuration: "9s" }}
-        />
-        <div
-          className="animate-particle absolute left-[35%] top-[40%] h-2 w-2 rounded-[2px] bg-steam-green/50"
-          style={{ animationDelay: "1s", animationDuration: "15s" }}
-        />
-        <div className="absolute left-[15%] top-[30%] h-32 w-32 animate-pulse-glow rounded-full bg-gradient-cool opacity-15 blur-[40px]" />
-        <div
-          className="absolute right-[10%] top-[60%] h-40 w-40 animate-pulse-glow rounded-full bg-gradient-warm opacity-15 blur-[40px]"
-          style={{ animationDelay: "2s" }}
-        />
-      </div>
-    </>
+    <div className="absolute inset-0 -z-10 overflow-hidden bg-background">
+      {/* Intense colorful blurred orbs */}
+      <div className="absolute -left-[10%] -top-[10%] h-[700px] w-[700px] rounded-full bg-comp-measurement-bg/40 blur-[140px] mix-blend-multiply dark:mix-blend-screen" />
+      <div className="absolute right-[0%] top-[10%] h-[500px] w-[500px] rounded-full bg-comp-number-concepts-bg/40 blur-[120px] mix-blend-multiply dark:mix-blend-screen" />
+      <div className="absolute left-[20%] top-[50%] h-[800px] w-[800px] rounded-full bg-comp-life-science-bg/30 blur-[160px] mix-blend-multiply dark:mix-blend-screen" />
+      <div className="absolute -right-[10%] top-[70%] h-[600px] w-[600px] rounded-full bg-comp-physical-science-bg/40 blur-[140px] mix-blend-multiply dark:mix-blend-screen" />
+    </div>
   );
 }

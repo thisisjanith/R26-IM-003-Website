@@ -44,7 +44,6 @@ import {
   ResourceCard,
   HeroBackdrop,
   ComponentIcon,
-  GRADIENT,
   type NavItem,
 } from "@/components/site/layout";
 import { SessionTable } from "@/components/site/charts";
@@ -188,40 +187,39 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
           <Link
             to="/"
             hash="components"
-            className="inline-flex items-center gap-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" /> All components
           </Link>
 
           <p
-            className={`mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${c.accent} animate-fade-up`}
+            className={`mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-comp-${c.slug} animate-fade-up`}
           >
             <ComponentIcon slug={c.slug} className="h-3.5 w-3.5" />
             Component {String(index).padStart(2, "0")} of{" "}
             {String(COMPONENTS.length).padStart(2, "0")}
-            {c.studentId && <span className="text-white/50">· {c.studentId}</span>}
+            {c.studentId && <span className="text-muted-foreground">· {c.studentId}</span>}
           </p>
-          <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.08] sm:text-5xl xl:text-6xl animate-fade-up [animation-delay:100ms]">
-            <span className="text-gradient-subtitle">Narrative Based AR Storybook</span>
+          <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.08] sm:text-5xl xl:text-6xl text-foreground animate-fade-up [animation-delay:100ms]">
+            Narrative Based AR Storybook
             <br />
-            <span className="text-white">for </span>
-            <span className="text-gradient-hero">{c.name}</span>
+            for <span className={`text-comp-${c.slug}`}>{c.name}</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-white/80 sm:text-xl animate-fade-up [animation-delay:200ms]">
-            <span className="font-semibold text-white">{c.tagline}.</span> {c.summary}
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground sm:text-xl animate-fade-up [animation-delay:200ms]">
+            <strong className="font-semibold text-foreground">{c.tagline}.</strong> {c.summary}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3 animate-fade-up [animation-delay:300ms]">
             <a
               href={assets.demoVideo ? "#media" : "#interactions"}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary shadow-warm transition-transform hover:scale-[1.03]"
+              className={`inline-flex items-center gap-2 rounded-full bg-comp-${c.slug} px-6 py-3 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-soft focus:ring-2 focus:ring-comp-${c.slug} focus:ring-offset-2`}
             >
-              <Play className="h-4 w-4 fill-primary" />
+              <Play className="h-4 w-4 fill-white text-white" />
               {assets.demoVideo ? "Watch the Demo" : "See the Interactions"}
             </a>
             <a
               href="#resources"
-              className="inline-flex items-center gap-2 rounded-full glass-dark px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-full bg-card border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               Resources
               <ArrowRight className="h-4 w-4" />
@@ -234,8 +232,8 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
               { k: "Languages", v: "සිං / EN", icon: <Languages className="h-4 w-4" /> },
               { k: "Mode", v: "Offline", icon: <Wifi className="h-4 w-4" /> },
             ].map((s) => (
-              <div key={s.k} className="rounded-2xl glass-dark p-4 text-white">
-                <dt className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/60">
+              <div key={s.k} className={`rounded-2xl bg-comp-${c.slug}-bg border-transparent p-4 text-white shadow-sm`}>
+                <dt className={`flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70`}>
                   {s.icon}
                   {s.k}
                 </dt>
@@ -246,11 +244,8 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
         </div>
 
         <div className="relative animate-fade-up [animation-delay:300ms]">
-          <div
-            className={`absolute -inset-6 animate-video-glow rounded-[2.5rem] ${GRADIENT[c.tone]} opacity-40 blur-3xl`}
-          />
           {assets.marker ? (
-            <div className="relative overflow-hidden rounded-[2rem] glass p-2 shadow-glow ring-1 ring-white/30">
+            <div className="relative overflow-hidden rounded-[2rem] bg-card p-2 shadow-sm border">
               <img
                 src={assets.marker}
                 alt={`${c.storybook} storybook page marker`}
@@ -259,13 +254,13 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
               <StorybookBadge c={c} />
             </div>
           ) : (
-            <div className="relative overflow-hidden rounded-[2rem] glass-dark p-10 text-white shadow-glow ring-1 ring-white/20">
+            <div className={`relative overflow-hidden rounded-[2rem] bg-comp-${c.slug}-bg p-10 text-white shadow-lg border-transparent`}>
               <span
-                className={`grid h-20 w-20 place-items-center rounded-3xl ${GRADIENT[c.tone]} shadow-glow`}
+                className={`grid h-20 w-20 place-items-center rounded-3xl bg-white/20 text-white shadow-sm backdrop-blur-sm`}
               >
                 <ComponentIcon slug={c.slug} className="h-10 w-10" />
               </span>
-              <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-white/60">
+              <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-white/70">
                 Illustrated storybook
               </p>
               <p className="mt-1 font-display text-3xl font-bold">{c.storybook}</p>
@@ -273,7 +268,7 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
                 {c.concepts.map((t) => (
                   <div
                     key={t}
-                    className="rounded-2xl bg-white/10 p-4 text-sm font-semibold ring-1 ring-white/10"
+                    className={`rounded-2xl bg-white/10 border border-white/20 p-4 text-sm font-semibold backdrop-blur-sm`}
                   >
                     {t}
                   </div>
@@ -289,12 +284,12 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
 
 function StorybookBadge({ c }: { c: StudyComponent }) {
   return (
-    <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl glass-dark px-5 py-3 text-white shadow-card">
-      <span className={`grid h-9 w-9 place-items-center rounded-xl ${GRADIENT[c.tone]}`}>
+    <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl bg-black/60 backdrop-blur-md px-5 py-3 text-white shadow-sm border border-white/10">
+      <span className={`grid h-9 w-9 place-items-center rounded-xl bg-comp-${c.slug}-bg text-white`}>
         <BookOpen className="h-4 w-4" />
       </span>
       <div className="leading-tight">
-        <p className="text-xs text-white/60">Storybook page marker</p>
+        <p className="text-xs text-white/70">Storybook page marker</p>
         <p className="text-sm font-semibold">{c.storybook}</p>
       </div>
     </div>
@@ -349,7 +344,7 @@ function Interactions({ c }: { c: StudyComponent }) {
           <InteractionCard
             key={it.title}
             n={String(i + 1).padStart(2, "0")}
-            tone={i % 2 === 0 ? c.tone : "cool"}
+            slug={c.slug}
             icon={<ComponentIcon slug={c.slug} className="h-6 w-6" />}
             title={it.title}
             body={it.body}
@@ -367,9 +362,9 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
   return (
     <Section id="media" eyebrow="Visual Media" title="See it in action">
       {!hasMedia && (
-        <div className="mx-auto max-w-2xl rounded-3xl border border-dashed bg-card/60 p-10 text-center shadow-soft">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-dashed bg-card/60 p-10 text-center shadow-sm">
           <span
-            className={`mx-auto grid h-14 w-14 place-items-center rounded-2xl text-white ${GRADIENT[c.tone]}`}
+            className={`mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-comp-${c.slug}-bg text-white`}
           >
             <ImageIcon className="h-6 w-6" />
           </span>
@@ -385,7 +380,7 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
 
       {assets.demoVideo && (
         <div className="mx-auto mb-16 grid max-w-5xl items-center gap-10 lg:grid-cols-[360px_1fr]">
-          <div className="relative mx-auto w-full max-w-[320px] overflow-hidden rounded-[2.5rem] bg-gradient-primary p-1.5 shadow-glow ring-4 ring-white/10 sm:max-w-[360px]">
+          <div className="relative mx-auto w-full max-w-[280px] overflow-hidden rounded-[2.5rem] bg-surface border p-1.5 shadow-sm sm:max-w-[360px]">
             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[2.15rem] bg-black">
               <video
                 src={assets.demoVideo}
@@ -399,7 +394,7 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
             </div>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <p className={`text-xs font-bold uppercase tracking-wider text-comp-${c.slug}`}>
               Prototype
             </p>
             <h3 className="mt-2 font-display text-3xl font-bold">Product walkthrough</h3>
@@ -418,7 +413,7 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
               className="lg:col-span-5"
               src={assets.marker}
               label="Storybook Page Marker Design"
-              tone="warm"
+              slug={c.slug}
             />
           )}
           {assets.diagram && (
@@ -426,7 +421,7 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
               className="lg:col-span-7"
               src={assets.diagram}
               label="Component System Diagram"
-              tone="primary"
+              slug={c.slug}
             />
           )}
         </div>
@@ -435,7 +430,7 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
       {assets.screens.length > 0 && (
         <div className="mt-16">
           <div className="mb-8 flex items-center gap-3">
-            <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-cool text-white shadow-glow">
+            <span className={`grid h-12 w-12 place-items-center rounded-xl bg-comp-${c.slug}-bg text-white shadow-sm`}>
               <Smartphone className="h-6 w-6" />
             </span>
             <h3 className="font-display text-2xl font-bold">App UI Interaction Flow</h3>
@@ -444,18 +439,18 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
             {assets.screens.map((img, i) => (
               <figure
                 key={img}
-                className="group relative w-[260px] flex-none snap-center overflow-hidden rounded-[2.5rem] bg-card p-1.5 shadow-card ring-1 ring-border transition-all duration-300 hover:-translate-y-2 hover:shadow-glow sm:w-[300px]"
+                className="group relative w-[260px] flex-none snap-center overflow-hidden rounded-[2.5rem] bg-card p-1.5 shadow-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-soft sm:w-[300px]"
               >
-                <div className="relative h-full w-full overflow-hidden rounded-[2rem]">
+                <div className="relative h-full w-full overflow-hidden rounded-[2.15rem]">
                   <img
                     src={img}
                     alt={`${c.name} UI screen ${i + 1}`}
                     className="aspect-[9/16] h-full w-full bg-black object-cover"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.15_0.04_265/0.9)] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   <figcaption className="absolute inset-x-0 bottom-0 translate-y-4 p-6 text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="inline-block rounded-full border border-white/10 bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+                    <span className="inline-block rounded-full border border-white/20 bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
                       Screen {String(i + 1).padStart(2, "0")}
                     </span>
                   </figcaption>
@@ -539,8 +534,6 @@ function Evaluation({ c }: { c: StudyComponent }) {
   );
 }
 
-/* ───────── resources ───────── */
-
 function Resources({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
   const r = assets.resources;
   return (
@@ -550,28 +543,28 @@ function Resources({ c, assets }: { c: StudyComponent; assets: ComponentAssets }
           title="Research Proposal"
           description="Individual component proposal"
           icon={<FileText className="h-6 w-6" />}
-          color="bg-gradient-primary"
+          slug={c.slug}
           links={r.proposal}
         />
         <ResourceCard
           title="Presentation Slides"
           description="Proposal & progress decks"
           icon={<Presentation className="h-6 w-6" />}
-          color="bg-gradient-fresh"
+          slug={c.slug}
           links={r.slides}
         />
         <ResourceCard
           title="Android APK Build"
           description="Install on Android 8.0+"
           icon={<Smartphone className="h-6 w-6" />}
-          color="bg-gradient-cool"
+          slug={c.slug}
           links={r.apk}
         />
         <ResourceCard
           title="Lesson Plan Kit"
           description="Teacher guides (Sinhala/EN)"
           icon={<BookOpen className="h-6 w-6" />}
-          color="bg-gradient-warm"
+          slug={c.slug}
           links={r.guides}
         />
         {assets.demoVideo && (
@@ -579,7 +572,7 @@ function Resources({ c, assets }: { c: StudyComponent; assets: ComponentAssets }
             title="Demo Video"
             description="High-res product walkthrough"
             icon={<Play className="h-6 w-6" />}
-            color="bg-gradient-primary"
+            slug={c.slug}
             links={[{ label: "View Video", href: assets.demoVideo, type: "mp4" }]}
           />
         )}
@@ -600,10 +593,10 @@ function OtherComponents({ current }: { current: ComponentSlug }) {
             key={x.slug}
             to="/components/$slug"
             params={{ slug: x.slug }}
-            className="group flex items-center gap-4 rounded-3xl border bg-card p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-card"
+            className="group flex items-center gap-4 rounded-2xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-soft"
           >
             <span
-              className={`grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl text-white ${GRADIENT[x.tone]}`}
+              className={`grid h-12 w-12 flex-shrink-0 place-items-center rounded-xl bg-comp-${x.slug}-bg text-white`}
             >
               <ComponentIcon slug={x.slug} />
             </span>
