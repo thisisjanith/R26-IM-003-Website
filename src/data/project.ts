@@ -283,6 +283,102 @@ export const RESULTS = {
   ],
 };
 
+/* ───────── site structure content ───────── */
+
+export type PresentationKey = "proposal" | "pp1" | "pp2" | "final";
+
+export const PRESENTATIONS: { key: PresentationKey; title: string; description: string }[] = [
+  {
+    key: "proposal",
+    title: "Proposal Presentation",
+    description: "Research problem, objectives and proposed methodology",
+  },
+  {
+    key: "pp1",
+    title: "Progress Presentation 1",
+    description: "Design, architecture and early prototype",
+  },
+  {
+    key: "pp2",
+    title: "Progress Presentation 2",
+    description: "Near-complete system and evaluation plan",
+  },
+  {
+    key: "final",
+    title: "Final Presentation",
+    description: "Completed system, classroom results and conclusions",
+  },
+];
+
+// Dates and mark allocations: replace "TBA" with the values from the module outline.
+export const MILESTONES: {
+  title: string;
+  date: string;
+  marks: string;
+  description: string;
+  deliverables: string[];
+}[] = [
+  {
+    title: "Project Proposal",
+    date: "TBA",
+    marks: "TBA",
+    description:
+      "Defines the research problem, gap, objectives and methodology for the group and for each of the four components, assessed through a proposal report and presentation.",
+    deliverables: ["Project Charter", "Proposal documents", "Proposal presentation"],
+  },
+  {
+    title: "Progress Presentation 1",
+    date: "TBA",
+    marks: "TBA",
+    description:
+      "Reviews the system design, the shared AR framework and the first working prototype of each component.",
+    deliverables: ["Progress presentation 1 slides", "Check list document"],
+  },
+  {
+    title: "Progress Presentation 2",
+    date: "TBA",
+    marks: "TBA",
+    description:
+      "Demonstrates the near-complete storybooks and AR scenes and presents the classroom evaluation plan.",
+    deliverables: ["Progress presentation 2 slides", "Check list document"],
+  },
+  {
+    title: "Final Assessment",
+    date: "TBA",
+    marks: "TBA",
+    description:
+      "Final demonstration of the complete framework with the classroom study results, together with the final reports, research paper and project website.",
+    deliverables: ["Group final report", "Individual final reports", "Research paper", "Website"],
+  },
+  {
+    title: "Viva",
+    date: "TBA",
+    marks: "TBA",
+    description:
+      "Individual oral examination on each member's component, contribution and understanding of the research.",
+    deliverables: ["Individual viva"],
+  },
+];
+
+export const TEAM: { name: string; role: string; email?: string }[] = [
+  { name: "Mendis B.M.U.I", role: "Group Leader" },
+  { name: "Bandara M.R.J.K", role: "Member" },
+  { name: "Jayasundara R.K.M.J.Y", role: "Member" },
+  { name: "Ilayperuma M.I", role: "Member" },
+];
+
+export const SUPERVISORS: { name: string; role: string; email?: string }[] = [
+  { name: "Mr. Ishara Gamage", role: "Supervisor" },
+  { name: "Mr. Nushkan Nismi", role: "Co-Supervisor" },
+];
+
+export const CONTACT = {
+  email: "it22177100@my.sliit.lk",
+  institute: "Sri Lanka Institute of Information Technology",
+  address: "New Kandy Road, Malabe, Sri Lanka",
+  phone: "+94 11 754 4801",
+};
+
 export const COMPARISON = [
   {
     system: "Wangid et al. (2020)",

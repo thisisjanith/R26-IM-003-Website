@@ -65,18 +65,27 @@ function useTheme() {
 
 export type NavItem = { id: string; label: string };
 
+/** Main tabs, in the order required by the CDAP website structure. Same on every page. */
+export const SITE_NAV: NavItem[] = [
+  { id: "home", label: "Home" },
+  { id: "domain", label: "Domain" },
+  { id: "milestones", label: "Milestones" },
+  { id: "documents", label: "Documents" },
+  { id: "presentations", label: "Presentations" },
+  { id: "about", label: "About Us" },
+  { id: "contact", label: "Contact Us" },
+];
+
 export function SiteShell({
-  nav,
   home = false,
   children,
 }: {
-  nav: NavItem[];
   home?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-200">
-      <SiteHeader nav={nav} home={home} />
+      <SiteHeader nav={SITE_NAV} home={home} />
       {children}
       <SiteFooter />
     </div>
@@ -86,7 +95,8 @@ export function SiteShell({
 function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState(nav[0]?.id ?? "");
+  // Scroll-spy only applies on the home page, where the sections live.
+  const [active, setActive] = useState(home ? (nav[0]?.id ?? "") : "");
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
@@ -97,6 +107,7 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
   }, []);
 
   useEffect(() => {
+    if (!home) return;
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -110,7 +121,7 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
       if (el) obs.observe(el);
     });
     return () => obs.disconnect();
-  }, [nav]);
+  }, [nav, home]);
 
   return (
     <header
@@ -129,16 +140,15 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
           <ul className="hidden items-center gap-1 xl:gap-2 xl:flex">
             {nav.map((n) => (
               <li key={n.id}>
-                <a
-                  href={`#${n.id}`}
+                <NavLink
+                  item={n}
+                  home={home}
                   className={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
                     active === n.id
                       ? "bg-primary/10 text-primary font-semibold"
                       : "text-muted-foreground hover:bg-surface hover:text-foreground"
                   }`}
-                >
-                  {n.label}
-                </a>
+                />
               </li>
             ))}
           </ul>
@@ -186,14 +196,13 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
           <div className="border-t bg-background px-2 pb-4 pt-2 shadow-sm xl:hidden animate-fade-up">
             <div className="grid grid-cols-2 gap-2">
               {nav.map((n) => (
-                <a
+                <NavLink
                   key={n.id}
-                  href={`#${n.id}`}
+                  item={n}
+                  home={home}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-surface"
-                >
-                  {n.label}
-                </a>
+                />
               ))}
             </div>
             <p className="mt-4 border-t px-3 pt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -222,11 +231,34 @@ function SiteHeader({ nav, home }: { nav: NavItem[]; home: boolean }) {
   );
 }
 
+/** In-page anchor on the home page; a link back to the home section everywhere else. */
+function NavLink({
+  item,
+  home,
+  className,
+  onClick,
+}: {
+  item: NavItem;
+  home: boolean;
+  className: string;
+  onClick?: () => void;
+}) {
+  return home ? (
+    <a href={`#${item.id}`} onClick={onClick} className={className}>
+      {item.label}
+    </a>
+  ) : (
+    <Link to="/" hash={item.id} onClick={onClick} className={className}>
+      {item.label}
+    </Link>
+  );
+}
+
 function SiteFooter() {
   return (
     <footer className="border-t bg-surface py-12 text-foreground transition-colors duration-200 mt-20">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div className="flex flex-col gap-4">
             <div>
               <p className="font-display text-lg font-bold">AR STEAM.lk</p>
@@ -237,6 +269,24 @@ function SiteFooter() {
             <p className="max-w-md text-sm text-muted-foreground">
               {GROUP.title}
             </p>
+          </div>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              Quick links
+            </p>
+            <ul className="mt-4 space-y-3 text-sm">
+              {SITE_NAV.map((n) => (
+                <li key={n.id}>
+                  <Link
+                    to="/"
+                    hash={n.id}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {n.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
           <div>
             <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
