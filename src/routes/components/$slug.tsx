@@ -17,23 +17,8 @@ import {
   Heart,
   Languages,
   Wifi,
+  ChevronRight,
 } from "lucide-react";
-
-import demoVideo from "@/assets/Demo.mp4";
-import storyBookMarker from "@/assets/story_book_marker.png";
-import systemDiagram from "@/assets/System_diagram.png";
-import ui1 from "@/assets/1.jpg";
-import ui2 from "@/assets/2.jpg";
-import ui3 from "@/assets/3.jpg";
-import ui4 from "@/assets/4.jpg";
-import ui5 from "@/assets/5.jpg";
-import ui6 from "@/assets/6.jpg";
-import ui7 from "@/assets/7.jpg";
-import ui8 from "@/assets/8.jpg";
-import ui9 from "@/assets/9.jpg";
-import physicalProposal from "@/assets/Project_Proposal.pdf";
-import physicalGrade4 from "@/assets/Grade_4.pdf";
-import physicalGrade5 from "@/assets/Grade_5.pdf";
 
 import {
   SiteShell,
@@ -44,88 +29,17 @@ import {
   ResourceCard,
   HeroBackdrop,
   ComponentIcon,
-  type NavItem,
 } from "@/components/site/layout";
 import { SessionTable } from "@/components/site/charts";
 import {
   COMPONENTS,
+  PRESENTATIONS,
   RESULTS,
   getComponent,
   type ComponentSlug,
-  type ResourceLink,
   type StudyComponent,
 } from "@/data/project";
-
-/* Media and downloads per component. Add a component's assets here as they become available. */
-type ComponentAssets = {
-  demoVideo?: string;
-  marker?: string;
-  diagram?: string;
-  screens: string[];
-  resources: {
-    proposal: ResourceLink[];
-    slides: ResourceLink[];
-    apk: ResourceLink[];
-    guides: ResourceLink[];
-  };
-};
-
-const PENDING: ResourceLink[] = [{ label: "Coming soon", href: "#", type: "pending" }];
-
-const ASSETS: Record<ComponentSlug, ComponentAssets> = {
-  "physical-science": {
-    demoVideo,
-    marker: storyBookMarker,
-    diagram: systemDiagram,
-    screens: [ui1, ui2, ui3, ui4, ui5, ui6, ui7, ui8, ui9],
-    resources: {
-      proposal: [
-        {
-          label: "Download PDF",
-          href: physicalProposal,
-          download: "Project_Proposal.pdf",
-          type: "pdf",
-        },
-      ],
-      slides: [
-        {
-          label: "Proposal Presentation",
-          href: "https://docs.google.com/presentation/d/1FDqdWzSrDYMExZTPc244BUZwVIMCgFHs/edit?usp=sharing&ouid=104282320511871493654&rtpof=true&sd=true",
-          type: "link",
-        },
-        {
-          label: "Progress Presentation 1",
-          href: "https://docs.google.com/presentation/d/17eSOtE-wsy5l876LlMfQFeo0NROwMB_N/edit?usp=sharing&ouid=104282320511871493654&rtpof=true&sd=true",
-          type: "link",
-        },
-        { label: "Progress Presentation 2", href: "#", type: "pending" },
-      ],
-      apk: [
-        {
-          label: "Download APK",
-          href: "https://drive.google.com/file/d/14vEFScXLe1Lpj0IMpz85U8tPWHk5bVAD/view?usp=sharing",
-          type: "apk",
-        },
-      ],
-      guides: [
-        { label: "Grade 4 Guide", href: physicalGrade4, download: "Grade_4.pdf", type: "pdf" },
-        { label: "Grade 5 Guide", href: physicalGrade5, download: "Grade_5.pdf", type: "pdf" },
-      ],
-    },
-  },
-  measurement: {
-    screens: [],
-    resources: { proposal: PENDING, slides: PENDING, apk: PENDING, guides: PENDING },
-  },
-  "life-science": {
-    screens: [],
-    resources: { proposal: PENDING, slides: PENDING, apk: PENDING, guides: PENDING },
-  },
-  "number-concepts": {
-    screens: [],
-    resources: { proposal: PENDING, slides: PENDING, apk: PENDING, guides: PENDING },
-  },
-};
+import { ASSETS, pending, slideLink, type ComponentAssets } from "@/data/assets";
 
 export const Route = createFileRoute("/components/$slug")({
   loader: ({ params }) => {
@@ -146,7 +60,7 @@ export const Route = createFileRoute("/components/$slug")({
   component: ComponentPage,
 });
 
-const NAV: NavItem[] = [
+const SECTIONS = [
   { id: "overview", label: "Overview" },
   { id: "concepts", label: "Concepts" },
   { id: "interactions", label: "Interactions" },
@@ -160,7 +74,7 @@ function ComponentPage() {
   const assets = ASSETS[c.slug];
 
   return (
-    <SiteShell nav={NAV}>
+    <SiteShell>
       {/* key resets scroll-linked state when switching between components */}
       <div key={c.slug}>
         <Overview c={c} assets={assets} />
@@ -184,13 +98,23 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
       <HeroBackdrop />
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-24 pt-10 lg:grid-cols-2 lg:pb-32">
         <div>
-          <Link
-            to="/"
-            hash="components"
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          <nav
+            aria-label="Breadcrumb"
+            className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-muted-foreground"
           >
-            <ArrowLeft className="h-4 w-4" /> All components
-          </Link>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Home
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link to="/" hash="components" className="transition-colors hover:text-foreground">
+              Components
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-foreground">{c.short}</span>
+          </nav>
 
           <p
             className={`mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-comp-${c.slug} animate-fade-up`}
@@ -232,8 +156,13 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
               { k: "Languages", v: "සිං / EN", icon: <Languages className="h-4 w-4" /> },
               { k: "Mode", v: "Offline", icon: <Wifi className="h-4 w-4" /> },
             ].map((s) => (
-              <div key={s.k} className={`rounded-2xl bg-comp-${c.slug}-bg border-transparent p-4 text-white shadow-sm`}>
-                <dt className={`flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70`}>
+              <div
+                key={s.k}
+                className={`rounded-2xl bg-comp-${c.slug}-bg border-transparent p-4 text-white shadow-sm`}
+              >
+                <dt
+                  className={`flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70`}
+                >
                   {s.icon}
                   {s.k}
                 </dt>
@@ -241,6 +170,18 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
               </div>
             ))}
           </dl>
+
+          <div className="mt-8 flex flex-wrap gap-2 animate-fade-up [animation-delay:500ms]">
+            {SECTIONS.slice(1).map((s) => (
+              <a
+                key={s.id}
+                href={`#${s.id}`}
+                className="rounded-full border bg-surface px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+              >
+                {s.label}
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="relative animate-fade-up [animation-delay:300ms]">
@@ -254,7 +195,9 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
               <StorybookBadge c={c} />
             </div>
           ) : (
-            <div className={`relative overflow-hidden rounded-[2rem] bg-comp-${c.slug}-bg p-10 text-white shadow-lg border-transparent`}>
+            <div
+              className={`relative overflow-hidden rounded-[2rem] bg-comp-${c.slug}-bg p-10 text-white shadow-lg border-transparent`}
+            >
               <span
                 className={`grid h-20 w-20 place-items-center rounded-3xl bg-white/20 text-white shadow-sm backdrop-blur-sm`}
               >
@@ -285,7 +228,9 @@ function Overview({ c, assets }: { c: StudyComponent; assets: ComponentAssets })
 function StorybookBadge({ c }: { c: StudyComponent }) {
   return (
     <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl bg-black/60 backdrop-blur-md px-5 py-3 text-white shadow-sm border border-white/10">
-      <span className={`grid h-9 w-9 place-items-center rounded-xl bg-comp-${c.slug}-bg text-white`}>
+      <span
+        className={`grid h-9 w-9 place-items-center rounded-xl bg-comp-${c.slug}-bg text-white`}
+      >
         <BookOpen className="h-4 w-4" />
       </span>
       <div className="leading-tight">
@@ -430,7 +375,9 @@ function Media({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
       {assets.screens.length > 0 && (
         <div className="mt-16">
           <div className="mb-8 flex items-center gap-3">
-            <span className={`grid h-12 w-12 place-items-center rounded-xl bg-comp-${c.slug}-bg text-white shadow-sm`}>
+            <span
+              className={`grid h-12 w-12 place-items-center rounded-xl bg-comp-${c.slug}-bg text-white shadow-sm`}
+            >
               <Smartphone className="h-6 w-6" />
             </span>
             <h3 className="font-display text-2xl font-bold">App UI Interaction Flow</h3>
@@ -525,17 +472,16 @@ function Evaluation({ c }: { c: StudyComponent }) {
 
       <p className="mx-auto mt-6 max-w-3xl text-center text-sm text-muted-foreground">
         Knowledge-test gains were measured for the framework as a whole.{" "}
-        <Link to="/" hash="results" className="font-semibold text-primary hover:underline">
+        <Link to="/" hash="domain" className="font-semibold text-primary hover:underline">
           See the group results
-        </Link>
-        .
+        </Link>{" "}
+        under Domain › Results.
       </p>
     </Section>
   );
 }
 
 function Resources({ c, assets }: { c: StudyComponent; assets: ComponentAssets }) {
-  const r = assets.resources;
   return (
     <Section id="resources" eyebrow="Resource Repository" title={`${c.name} deliverables`}>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -544,28 +490,30 @@ function Resources({ c, assets }: { c: StudyComponent; assets: ComponentAssets }
           description="Individual component proposal"
           icon={<FileText className="h-6 w-6" />}
           slug={c.slug}
-          links={r.proposal}
+          links={[assets.proposalDoc ?? pending()]}
         />
         <ResourceCard
           title="Presentation Slides"
-          description="Proposal & progress decks"
+          description="Proposal, progress & final decks"
           icon={<Presentation className="h-6 w-6" />}
           slug={c.slug}
-          links={r.slides}
+          links={PRESENTATIONS.map((p) => slideLink(c.slug, p.key, p.title))}
         />
         <ResourceCard
           title="Android APK Build"
           description="Install on Android 8.0+"
           icon={<Smartphone className="h-6 w-6" />}
           slug={c.slug}
-          links={r.apk}
+          links={[
+            assets.apk ? { label: "Download APK", href: assets.apk, type: "apk" } : pending(),
+          ]}
         />
         <ResourceCard
           title="Lesson Plan Kit"
           description="Teacher guides (Sinhala/EN)"
           icon={<BookOpen className="h-6 w-6" />}
           slug={c.slug}
-          links={r.guides}
+          links={assets.guides.length ? assets.guides : [pending()]}
         />
         {assets.demoVideo && (
           <ResourceCard
